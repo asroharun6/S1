@@ -1,0 +1,60 @@
+import java.io.*;
+import java.net.*;
+
+public class FileSender {
+    public static void main(String[] args) throws IOException {
+        // Host dan port dapat disesuaikan
+        String host = "localhost";
+        int port = 8080;
+        String fileToSend = "path/to/your/file.txt"; // Ganti dengan path file yang akan dikirim
+
+        try (Socket socket = new Socket(host, port);
+             FileInputStream fileInputStream = new FileInputStream(fileToSend);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+             OutputStream outputStream = socket.getOutputStream()) {
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                outputStream.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+#####################
+
+
+import java.io.*;
+import java.net.*;
+
+public class FileReceiver {
+    public static void main(String[] args) throws IOException {
+        int port = 8080;
+        String fileToSave = "path/to/save/file.txt"; // Ganti dengan path untuk menyimpan file
+
+        try (ServerSocket serverSocket = new ServerSocket(port);
+             Socket socket = serverSocket.accept();
+             InputStream inputStream = socket.getInputStream();
+             FileOutputStream fileOutputStream = new FileOutputStream(fileToSave);
+             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)) {
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                bufferedOutputStream.write(buffer, 0, bytesRead);
+                bufferedOutputStream.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
